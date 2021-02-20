@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resende's LinkShortener</title>
+    <link rel="icon" type="image/gif" href="images/animated_favicon1.gif">
+    <link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+  <script src="https://www.gstatic.com/firebasejs/5.4.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/6.2.0/firebase-database.js"></script>
+    <script>
+        // Your web app's Firebase configuration
+        var firebaseConfig = {
+            apiKey: "AIzaSyAXRK6LnVgvUUlXiQof-yiqKIjsZDBnaEg",
+            authDomain: "guresende.firebaseapp.com",
+            databaseURL: "https://guresende.firebaseio.com",
+            projectId: "guresende",
+            storageBucket: "guresende.appspot.com",
+            messagingSenderId: "264759236949",
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+    </script>
+      <div id="colunaPrincipal">
+        <div class="colunasdeconteudo">
+          <h1 class="titulo">Obrigado por utilizar o encurtador</h1>
+          <h2 class="subtitulo" id="sub">Buscando link...</h2>
+          <a href="" class="botaoPadrao" id="direto" style="visibility: hidden;">Ir para o link agora</a>
+        </div>
+      </div>
+      <script>
+        var colunaPrincipal = document.getElementById('colunaPrincipal')
+        var encurtadorRef = firebase.database().ref('ServidorResende/links')
+        var botao = document.getElementById('direto')
+        var seg
+        var sub = document.getElementById('sub')
+        if (window.location.hash) {
+          var nome = window.location.hash.substring(1)
+          encurtadorRef.child(nome).child('nome').once('value').then(snapshot => {
+            if (snapshot.exists() == true) {
+            var link = snapshot.val()
+            sub.innerHTML = 'Você será redirecionado em <label id="seg"></label> segundos'
+            seg = document.getElementById('seg')
+            botao.href = link
+            botao.style.visibility = 'visible'
+            c = 6
+            setInterval(function() {
+              c--
+              seg.innerText = c
+            }, 1000)
+            setTimeout(function() {
+              window.location.href = link
+            }, 5000)
+            } else {
+              sub.innerText = 'Este link não existe'
+              sub.style.color = 'red'
+              botao.innerText = 'Ir para o encurtador'
+              botao.href = 'https://gustavoresende.net/encurtador'
+              botao.style.visibility = 'visible'
+            }
+            
+          })
+        } else {
+          window.location = 'https://gustavoresende.net/encurtador'
+        }
+      </script>
+</body>
+</html>
